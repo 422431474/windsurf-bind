@@ -41,17 +41,49 @@ function saveCards() {
 }
 
 // 解析信用卡字符串
-// 格式：卡号|月份|年份|CVC
+// 支持多种格式：
+// 格式1: 卡号|月份|年份|CVC (原格式)
+// 格式2: 卡号|月份/年份|CVC (斜杠分隔)
+// 格式3: 卡号|月份/年份(2位或4位)|CVC
 function parseCardString(str) {
   const parts = str.trim().split('|');
-  if (parts.length !== 4) {
+  
+  let number, month, year, cvc;
+  
+  if (parts.length === 4) {
+    // 格式1: 卡号|月份|年份|CVC
+    [number, month, year, cvc] = parts;
+  } else if (parts.length === 3) {
+    // 格式2/3: 卡号|月份/年份|CVC
+    [number, , cvc] = parts;
+    const expiryPart = parts[1];
+    
+    // 解析月份/年份
+    if (expiryPart.includes('/')) {
+      const expiryParts = expiryPart.split('/');
+      month = expiryParts[0];
+      year = expiryParts[1];
+    } else {
+      // 尝试解析 MMYY 或 MMYYYY 格式
+      if (expiryPart.length === 4) {
+        month = expiryPart.slice(0, 2);
+        year = '20' + expiryPart.slice(2, 4);
+      } else if (expiryPart.length === 6) {
+        month = expiryPart.slice(0, 2);
+        year = expiryPart.slice(2, 6);
+      } else {
+        return null;
+      }
+    }
+  } else {
     return null;
   }
 
-  const [number, month, year, cvc] = parts;
-
+  // 清理卡号
+  const cleanNumber = number.replace(/\s/g, '');
+  
   // 验证卡号（至少13位数字）
-  if (!/^\d{13,19}$/.test(number.replace(/\s/g, ''))) {
+  if (!/^\d{13,19}$/.test(cleanNumber)) {
     return null;
   }
 
@@ -61,8 +93,14 @@ function parseCardString(str) {
     return null;
   }
 
+  // 处理年份
+  let fullYear = year;
+  if (year.length === 2) {
+    fullYear = '20' + year;
+  }
+  
   // 验证年份（4位数字）
-  if (!/^\d{4}$/.test(year)) {
+  if (!/^\d{4}$/.test(fullYear)) {
     return null;
   }
 
@@ -72,9 +110,9 @@ function parseCardString(str) {
   }
 
   return {
-    number: number.replace(/\s/g, ''),
+    number: cleanNumber,
     month: month.padStart(2, '0'),
-    year: year,
+    year: fullYear,
     cvc: cvc,
     id: Date.now() + Math.random().toString(36).substr(2, 9)
   };
