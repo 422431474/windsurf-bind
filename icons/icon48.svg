@@ -1,11 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 128 128">
   <defs>
     <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#667eea"/>
-      <stop offset="100%" style="stop-color:#764ba2"/>
+      <stop offset="0%" style="stop-color:#00CED1"/>
+      <stop offset="100%" style="stop-color:#20B2AA"/>
     </linearGradient>
   </defs>
-  <rect width="48" height="48" rx="10" fill="url(#grad)"/>
-  <text x="24" y="32" font-family="Arial" font-size="24" font-weight="bold" fill="white" text-anchor="middle">W</text>
+  <rect width="128" height="128" rx="20" fill="url(#grad)"/>
+  <rect x="20" y="35" width="88" height="58" rx="8" fill="white" opacity="0.95"/>
+  <rect x="20" y="50" width="88" height="12" fill="#333"/>
+  <rect x="30" y="68" width="20" height="15" rx="3" fill="#FFD700"/>
+  <circle cx="60" cy="78" r="2" fill="#666"/>
+  <circle cx="68" cy="78" r="2" fill="#666"/>
+  <circle cx="76" cy="78" r="2" fill="#666"/>
+  <circle cx="84" cy="78" r="2" fill="#666"/>
+  <path d="M100 8 L92 28 L102 28 L94 48 L108 22 L98 22 L106 8 Z" fill="#FFD700" stroke="#FFA500" stroke-width="1"/>
 </svg>
 
