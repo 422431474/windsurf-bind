@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Windsurf 自动填卡</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- 头部 -->
+    <header class="header">
+      <h1>💳 Windsurf 自动填卡</h1>
+      <p class="subtitle">Stripe 支付页面自动填写工具</p>
+    </header>
+
+    <!-- 批量添加区域 -->
+    <section class="section">
+      <h2>批量添加信用卡</h2>
+      <div class="input-group">
+        <textarea 
+          id="batchInput" 
+          placeholder="每行一张卡，格式：卡号|月份|年份|CVC&#10;例如：6221485472563082|01|2031|682"
+          rows="4"
+        ></textarea>
+      </div>
+      <button id="batchAddBtn" class="btn btn-primary">
+        <span>➕</span> 批量添加
+      </button>
+    </section>
+
+    <!-- 信用卡列表 -->
+    <section class="section">
+      <div class="section-header">
+        <h2>信用卡列表</h2>
+        <span id="cardCount" class="badge">0 张</span>
+      </div>
+      <div id="cardList" class="card-list">
+        <div class="empty-state">
+          <p>暂无信用卡</p>
+          <p class="hint">请在上方批量添加</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 操作按钮 -->
+    <section class="actions">
+      <button id="clearAllBtn" class="btn btn-danger">
+        <span>🗑️</span> 清空全部
+      </button>
+    </section>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,93 @@
+/**
+ * Windsurf 自动填卡 - 悬浮窗样式
+ */
+
+/* 悬浮窗容器 */
+#windsurf-autofill-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999999;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* 一键填卡按钮 */
+#windsurf-autofill-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+#windsurf-autofill-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+#windsurf-autofill-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(102, 126, 234, 0.4);
+}
+
+#windsurf-autofill-btn:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 按钮图标 */
+#windsurf-autofill-btn::before {
+  content: '💳';
+  font-size: 16px;
+}
+
+/* 填卡状态提示 */
+#windsurf-status {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 10px;
+  padding: 10px 16px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  font-size: 13px;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+#windsurf-status.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#windsurf-status.success {
+  color: #10b981;
+  border-left: 3px solid #10b981;
+}
+
+#windsurf-status.error {
+  color: #ef4444;
+  border-left: 3px solid #ef4444;
+}
+
+#windsurf-status.info {
+  color: #3b82f6;
+  border-left: 3px solid #3b82f6;
+}
+
