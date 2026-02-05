@@ -211,7 +211,11 @@
       console.log('[Windsurf] 自动填卡完成，开始监测金额变化');
 
       // 自动点击"开始试用"按钮
-      await autoClickSubmit();
+      try {
+        await autoClickSubmit();
+      } catch (submitError) {
+        console.error('[Windsurf] 自动提交失败:', submitError);
+      }
 
     } catch (error) {
       console.error('[Windsurf] 填卡失败:', error);
