@@ -135,7 +135,7 @@
       console.log('[Windsurf] 获取到信用卡:', card.number.slice(-4));
 
       // 等待页面元素加载
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       // 填写信用卡号
       const cardNumberInput = document.getElementById('cardNumber');
@@ -144,7 +144,7 @@
         console.log('[Windsurf] 已填写卡号');
       }
 
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise(resolve => setTimeout(resolve, 50));
 
       // 填写过期日期
       const cardExpiryInput = document.getElementById('cardExpiry');
@@ -153,7 +153,7 @@
         console.log('[Windsurf] 已填写过期日期');
       }
 
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise(resolve => setTimeout(resolve, 50));
 
       // 填写 CVC
       const cardCvcInput = document.getElementById('cardCvc');
@@ -162,7 +162,7 @@
         console.log('[Windsurf] 已填写 CVC');
       }
 
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise(resolve => setTimeout(resolve, 50));
 
       // 填写姓名
       const billingNameInput = document.getElementById('billingName');
@@ -171,7 +171,7 @@
         console.log('[Windsurf] 已填写姓名');
       }
 
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise(resolve => setTimeout(resolve, 50));
 
       // 选择国家
       const billingCountrySelect = document.getElementById('billingCountry');
@@ -180,7 +180,7 @@
         console.log('[Windsurf] 已选择国家');
       }
 
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise(resolve => setTimeout(resolve, 80));
 
       // 选择城市/地区
       const billingAreaSelect = document.getElementById('billingAdministrativeArea');
@@ -189,7 +189,7 @@
         console.log('[Windsurf] 已选择城市');
       }
 
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise(resolve => setTimeout(resolve, 50));
 
       // 填写地区
       const billingLocalityInput = document.getElementById('billingLocality');
@@ -198,7 +198,7 @@
         console.log('[Windsurf] 已填写地区');
       }
 
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise(resolve => setTimeout(resolve, 50));
 
       // 填写地址
       const billingAddressInput = document.getElementById('billingAddressLine1');
@@ -207,8 +207,11 @@
         console.log('[Windsurf] 已填写地址');
       }
 
-      showStatus('✓ 填卡完成！', 'success');
-      console.log('[Windsurf] 自动填卡完成');
+      showStatus('✓ 填卡完成！等待自动提交...', 'success');
+      console.log('[Windsurf] 自动填卡完成，开始监测金额变化');
+
+      // 自动点击"开始试用"按钮
+      await autoClickSubmit();
 
     } catch (error) {
       console.error('[Windsurf] 填卡失败:', error);
@@ -216,6 +219,93 @@
     } finally {
       button.disabled = false;
       button.textContent = '一键填卡';
+    }
+  }
+
+  // 自动点击"开始试用"按钮
+  // 监测金额稳定后自动提交
+  async function autoClickSubmit() {
+    console.log('[Windsurf] 开始监测金额变化...');
+    
+    // 查找提交按钮（开始试用）
+    const findSubmitButton = () => {
+      // 尝试多种选择器
+      const selectors = [
+        'button[type="submit"]',
+        '.SubmitButton',
+        '[data-testid="hosted-payment-submit-button"]',
+        'button.SubmitButton-IconContainer',
+        '.SubmitButton-IconContainer'
+      ];
+      
+      for (const selector of selectors) {
+        const btn = document.querySelector(selector);
+        if (btn) return btn;
+      }
+      
+      // 通过按钮文本查找
+      const buttons = document.querySelectorAll('button');
+      for (const btn of buttons) {
+        if (btn.textContent.includes('开始试用') || 
+            btn.textContent.includes('Start trial') ||
+            btn.textContent.includes('Subscribe')) {
+          return btn;
+        }
+      }
+      return null;
+    };
+
+    // 获取当前金额文本
+    const getAmountText = () => {
+      const amountElements = document.querySelectorAll('[class*="Amount"], [class*="amount"], [class*="total"], [class*="Total"]');
+      let text = '';
+      amountElements.forEach(el => {
+        text += el.textContent + '|';
+      });
+      return text;
+    };
+
+    // 等待金额稳定（连续3次检测相同）
+    let lastAmount = '';
+    let stableCount = 0;
+    const maxWait = 30; // 最多等待30秒
+    let waitCount = 0;
+
+    while (stableCount < 3 && waitCount < maxWait) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      waitCount++;
+      
+      const currentAmount = getAmountText();
+      
+      if (currentAmount === lastAmount && currentAmount !== '') {
+        stableCount++;
+        console.log(`[Windsurf] 金额稳定检测 ${stableCount}/3`);
+      } else {
+        stableCount = 0;
+        lastAmount = currentAmount;
+        console.log('[Windsurf] 金额变化中，继续等待...');
+      }
+    }
+
+    if (waitCount >= maxWait) {
+      console.log('[Windsurf] 等待超时，尝试点击提交按钮');
+    }
+
+    // 查找并点击提交按钮
+    const submitBtn = findSubmitButton();
+    if (submitBtn) {
+      console.log('[Windsurf] 找到提交按钮，准备点击');
+      showStatus('金额已稳定，自动提交中...', 'info');
+      
+      // 等待一下再点击
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      submitBtn.click();
+      console.log('[Windsurf] 已点击"开始试用"按钮');
+      showStatus('✓ 已自动提交！', 'success');
+    } else {
+      console.log('[Windsurf] 未找到提交按钮');
+      showStatus('填卡完成，请手动点击提交', 'info');
     }
   }
 

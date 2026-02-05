@@ -120,8 +120,8 @@ function handleBatchAdd() {
   alert(message);
 }
 
-// 删除单张信用卡
-function handleDeleteCard(id) {
+// 删除单张信用卡（暴露到全局作用域供 onclick 调用）
+window.handleDeleteCard = function(id) {
   cards = cards.filter(card => card.id !== id);
   saveCards();
   renderCardList();
