@@ -158,13 +158,6 @@ function handleBatchAdd() {
   alert(message);
 }
 
-// 删除单张信用卡（暴露到全局作用域供 onclick 调用）
-window.handleDeleteCard = function(id) {
-  cards = cards.filter(card => card.id !== id);
-  saveCards();
-  renderCardList();
-}
-
 // 清空所有信用卡
 function handleClearAll() {
   if (cards.length === 0) {
@@ -203,10 +196,25 @@ function renderCardList() {
         <span class="card-details">${card.month}/${card.year} · CVC: ${card.cvc}</span>
       </div>
       <div class="card-actions">
-        <button class="btn btn-delete" onclick="handleDeleteCard('${card.id}')">删除</button>
+        <button class="btn btn-delete" data-delete-id="${card.id}">删除</button>
       </div>
     </div>
   `).join('');
+
+  // 绑定删除按钮事件（事件委托）
+  cardList.querySelectorAll('.btn-delete').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const id = this.getAttribute('data-delete-id');
+      handleDeleteCard(id);
+    });
+  });
+}
+
+// 删除单张信用卡
+function handleDeleteCard(id) {
+  cards = cards.filter(card => card.id !== id);
+  saveCards();
+  renderCardList();
 }
 
 // 格式化卡号显示（隐藏中间部分）
